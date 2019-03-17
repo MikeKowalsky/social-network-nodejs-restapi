@@ -1,3 +1,5 @@
+const path = require("path");
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
@@ -14,6 +16,8 @@ const app = express();
 
 app.use(bodyParser.json()); // application/json
 
+app.use("/images", express.static(path.join(__dirname, "images")));
+
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST");
@@ -22,6 +26,14 @@ app.use((req, res, next) => {
 });
 
 app.use("/feed", feedRoutes);
+
+// general error handling middleware
+app.use((err, req, res, next) => {
+  console.log(err);
+  const status = err.statusCode || 500;
+  const message = err.message;
+  res.status(status).json({ message });
+});
 
 mongoose
   .connect(MONGODB_URI, { useNewUrlParser: true })

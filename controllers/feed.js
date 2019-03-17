@@ -21,11 +21,11 @@ exports.getPosts = (req, res, next) => {
 
 exports.createPost = (req, res, next) => {
   const errors = validationResult(req);
-  if (!errors.isEmpty())
-    return res.status(422).json({
-      message: "Validation failed, enered data is incorrect",
-      errors: errors.array()
-    });
+  if (!errors.isEmpty()) {
+    const error = new Error("Validation failed, enered data is incorrect");
+    error.statusCode = 422;
+    throw error;
+  }
 
   const title = req.body.title;
   const content = req.body.content;
@@ -45,5 +45,12 @@ exports.createPost = (req, res, next) => {
         post: result
       });
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      // in async code throw err will be not catched be general
+      // error handling middleware
+      next(err);
+    });
 };
