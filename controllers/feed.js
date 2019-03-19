@@ -24,12 +24,17 @@ exports.createPost = (req, res, next) => {
     error.statusCode = 422;
     throw error;
   }
-
+  if (!req.file) {
+    const error = new Error("File is missing");
+    error.statusCode = 422;
+    throw error;
+  }
+  const imageUrl = req.file.path;
   const title = req.body.title;
   const content = req.body.content;
   const post = new Post({
     title,
-    imageUrl: "images/book.jpg",
+    imageUrl,
     content,
     creator: { name: "Mike" }
   });
