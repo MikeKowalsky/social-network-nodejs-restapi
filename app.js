@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const multer = require("multer");
 
 const feedRoutes = require("./routes/feed");
+const authRoutes = require("./routes/auth");
 
 const keys = require("./utils/keys");
 
@@ -49,13 +50,20 @@ app.use((req, res, next) => {
 });
 
 app.use("/feed", feedRoutes);
+app.use("/auth", authRoutes);
 
 // general error handling middleware
 app.use((err, req, res, next) => {
   console.log(err);
+
+  //
+  // destructurization
+  //
+
   const status = err.statusCode || 500;
   const message = err.message;
-  res.status(status).json({ message });
+  const data = err.data;
+  res.status(status).json({ message, data });
 });
 
 mongoose
