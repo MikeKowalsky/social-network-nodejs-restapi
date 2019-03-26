@@ -70,7 +70,13 @@ mongoose
   .connect(MONGODB_URI, { useNewUrlParser: true })
   .then(c => {
     console.log("***** MongoDB connected *****");
-    app.listen(8080, () => console.log("* Server is working on 8080 *"));
+    const server = app.listen(8080, () =>
+      console.log("* Server is working on 8080 *")
+    );
+    const io = require("./socket").init(server);
+    io.on("connection", socket => {
+      console.log("Client connected");
+    });
   })
   .catch(err => {
     console.log(err);
