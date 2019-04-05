@@ -40,7 +40,7 @@ exports.login = async (req, res, next) => {
 
     if (!loadedUser) {
       const error = new Error("User with that email not found!");
-      error.statusCode = 404;
+      error.statusCode = 401;
       throw error;
     }
 
@@ -61,7 +61,7 @@ exports.login = async (req, res, next) => {
       { expiresIn: "1h" }
     );
     res.status(200).json({ token, userId: loadedUser._id.toString() });
-    // in case of success retunr nothing
+    // in case of success return nothing
     return;
   } catch (err) {
     if (!err.statusCode) {
@@ -74,8 +74,8 @@ exports.login = async (req, res, next) => {
 };
 
 exports.getStatus = async (req, res, next) => {
-  const user = await User.findById(req.userId);
   try {
+    const user = await User.findById(req.userId);
     if (!user) {
       const error = new Error("User not found!");
       error.statusCode = 404;
